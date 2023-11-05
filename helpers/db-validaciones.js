@@ -21,11 +21,11 @@ const emailExiste = async (correo = '') => {
 }
 
 //VERIFICAR SI EXISTE USUARIO POR ID
-const existeUsuarioPorId = async (id = '') => {
+const existeUsuarioPorId = async ( id ) => {
 
-    const existeUsuario = await Usuario.findById({ id });
+    const existeUsuario = await Usuario.findById( id );
     if (!existeUsuario){
-        throw new Error(`El id no existe ${ correo }`);
+        throw new Error(`El id no existe`);
     }
 }
 

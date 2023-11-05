@@ -32,9 +32,10 @@ const UsuarioSchema = new Schema({
     },
 });
 
-//ELIMINAR CONTRASEÑA Y VERSION
+//ELIMINAR CONTRASEÑA, VERSION Y REEMPLAZAR EL _ID POR DEFECTO DE MONGO POR EL UID
 UsuarioSchema.methods.toJSON = function () {
-    const { __v,password,...usuario } = this.toObject();
+    const { __v,password,_id,...usuario } = this.toObject();
+    usuario.uid = _id;
     return usuario;
 }
 

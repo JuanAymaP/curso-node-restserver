@@ -7,6 +7,7 @@ class Server {
         this.app = express();
         this.port = process.env.PORT;
         this.usuariosRoutePath = '/api/usuarios';
+        this.authPath = '/api/auth';
 
         //CONECTAR A LA BASE DE DATOS
         this.conectarDB();
@@ -35,6 +36,8 @@ class Server {
 wa
     //ROUTES = RUTAS
     routes(){
+        //RECOMENDABLE ORDENAR ALFABETICAMENTE PERO EL AUTH SIEMPRE VA PRIMERO
+        this.app.use(this.authPath,require('../routes/auth.routes'));
         this.app.use(this.usuariosRoutePath,require('../routes/usuarios.routes'));
     }
 

@@ -3,23 +3,32 @@ const bcryptjs = require('bcryptjs');
 
 const Usuario = require('../models/usuario');
 
-const usuariosGet = (req = request, res = response) => {
-    //res.send('Hello World!')
-    //res.status(400).json({
+//OBTENER USUARIOS
+const usuariosGet = async (req = request, res = response) => {
 
-    const {q,nombre = 'No name',apikey,page = 1,limit} = req.query;
+    const { limite = 5, desde = 0 } = req.query;
+    const query = {estado: true};
+
+    /*const usuarios = await Usuario.find(query)
+        .skip(Number( desde ))
+        .limit(Number( limite ));
+
+    const total = await Usuario.countDocuments(query);*/
+
+    //CONSTANTE PARA CREAR UNA COLECCIÓN DE PROMESAS Y EJECUTAR AMBAS DE FORMA PARALELA
+    const [ total, usuarios ] = await Promise.all([
+        Usuario.countDocuments(query),
+        Usuario.find(query)
+            .skip(Number( desde ))
+            .limit(Number( limite ))
+    ]);
 
     res.json({
-        ok: true,
-        message: 'get API - controlador',
-        q,
-        nombre,
-        apikey,
-        page,
-        limit
+        total,
+        usuarios
     });
 };
-
+//REGISTRAR USUARIO
 const usuariosPost = async (req, res = response) => {
 
     const {nombre,correo,password,rol} = req.body;
@@ -39,7 +48,7 @@ const usuariosPost = async (req, res = response) => {
         usuario
     });
 };
-//ACTUALZIAR USUARIO
+//ACTUALIZAR USUARIO
 const usuariosPut = async (req, res = response) => {
 
     const { id } = req.params;
@@ -53,27 +62,30 @@ const usuariosPut = async (req, res = response) => {
     }
 
     const usuario = await Usuario.findByIdAndUpdate(id, resto);
-
-
-    res.json({
-        message: 'put API - controlador',
-        id,
-        usuario
-    });
+    //DEVOLVEMOS EL USUARIO ACTUALIZADO
+    res.json(usuario);
 };
-
-const usuariosPatch = (req, res = response) => {
+const usuariosPatch = async (req, res = response) => {
     res.json({
         message: 'patch API - controlador',
     });
 };
+const usuariosDelete = async (req, res = response) => {
+    const { id } =req.params;
 
-const usuariosDelete = (req, res = response) => {
-    res.json({
+    // FISICAMENTE LO BORRAMOS
+    //const usuario = await Usuario.findByIdAndDelete( id );
+
+    const usuario = await Usuario.findByIdAndUpdate( id, { estado: false } );
+    //const  usuarioAutenticado = req.usuario;
+
+    res.json(usuario);
+    /*res.json({
         message: 'delete API',
-    });
+        usuario,
+        usuarioAutenticado
+    });*/
 };
-
 
 module.exports = {
     usuariosGet,
